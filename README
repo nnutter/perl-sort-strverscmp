@@ -1,0 +1,13 @@
+
+
+This archive contains the distribution Sort-strverscmp,
+version 0.004:
+
+  Compare strings while treating digits characters numerically.
+
+This software is copyright (c) 2013 by The Genome Institute at Washington University <nnutter@genome.wustl.edu>.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+
