@@ -101,6 +101,10 @@ Prints:
 
 Pure Perl implementation of GNU strverscmp.
 
+=head1 AUTHOR
+
+Nathaniel Nutter C<nnutter@cpan.org>
+
 =head1 COPYRIGHT AND DISCLAIMER
 
 Copyright 2013, The Genome Institute at Washington University C<nnutter@cpan.org>, all rights
@@ -110,7 +114,3 @@ and/or modify it under the same terms as Perl itself.
 This program is distributed in the hope that it will be useful, but
 without any warranty; without even the implied warranty of
 merchantability or fitness for a particular purpose.
-
-=head1 AUTHOR
-
-Nathaniel Nutter C<nnutter@cpan.org>
