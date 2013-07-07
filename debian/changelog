@@ -1,0 +1,5 @@
+libsort-strverscmp-perl (0.006-0ubuntu0tgi1) raring; urgency=low
+
+  * Initial release.
+
+ -- Nathaniel Nutter <nnutter@genome.wustl.edu>  Sat, 06 Jul 2013 21:29:14 -0500
