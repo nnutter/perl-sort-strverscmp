@@ -1,51 +1,24 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 3;
 
 use Sort::strverscmp;
 
-subtest 'decompose_version' => sub {
+subtest 'decompose' => sub {
     my @cases = (
-        ['abc123def', 'abc'   , '123', 'def'],
-        ['abc123'   , 'abc'   , '123', ''   ],
-        ['abcdef'   , 'abcdef',    '', ''   ],
-        ['123def'   , ''      , '123', 'def'],
+        ['abc-123', 'abc', '-', '123'],
+        ['abc .2', 'abc ', '.', '2'],
+        ['abc 0.2', 'abc ', '0', '.', '2'],
+        ['1.0', '1', '.', '0'],
+        ['v_5', 'v', '_', '5'],
     );
     plan tests => scalar(@cases);
 
     for my $case (@cases) {
-        my ($orig, $estr, $enum, $erem) = @$case;
-
-        subtest qq(Case: $orig) => sub {
-            plan tests => 3;
-
-            my ($str, $num, $rem) = Sort::strverscmp::decompose_version($orig);
-            is($str, $estr, 'string matched');
-            is($num, $enum, 'number matched');
-            is($rem, $erem, 'remainder matched');
-        };
-    }
-};
-
-subtest 'decompose_fractional' => sub {
-    my @cases = (
-        ['009', '00',  '9'],
-        [ '90', ''  , '90'],
-        [  '9', ''  ,  '9'],
-    );
-    plan tests => scalar(@cases);
-
-    for my $case (@cases) {
-        my ($orig, $ezeroes, $enum, $erem) = @$case;
-
-        subtest qq(Case: $orig) => sub {
-            plan tests => 2;
-
-            my ($zeroes, $num, $rem) = Sort::strverscmp::decompose_fractional($orig);
-            is($zeroes, $ezeroes, 'zeroes matched');
-            is($num, $enum, 'number matched');
-        };
+        my ($orig, @eparts) = @$case;
+        my @parts = Sort::strverscmp::decompose($orig);
+        is_deeply(\@parts, \@eparts, qq(parts matched for '$orig'));
     }
 };
 
@@ -60,10 +33,16 @@ subtest 'GNU strverscmp examples' => sub {
 };
 
 subtest 'custom examples' => sub {
-    plan tests => 4;
+    plan tests => 10;
 
     is(strverscmp('alpha1', 'beta1'), -1, q('alpha1' < 'beta1'));
     is(strverscmp('g', 'G'), 1, q('g' > 'G'));
     is(strverscmp('1.0.5', '1.0.50'), -1, q('1.0.5' < '1.0.50'));
     is(strverscmp('1.0.5', '1.05'), 1, q('1.0.5' > '1.05'));
+    is(strverscmp('hi .2', 'hi 0.2'), -1, q('hi .2' < 'hi 0.2'));
+    is(strverscmp('hi .2', 'hi abc'), -1, q('hi .2' < 'hi abc'));
+    is(strverscmp('hi 0', 'hi 009'), 1, q('hi 0' > 'hi 009'));
+    is(strverscmp('hi.0', 'hi.009'), 1, q('hi.0' > 'hi.009'));
+    is(strverscmp('hi-0', 'hi-009'), 1, q('hi-0' > 'hi-009'));
+    is(strverscmp('hi-0', 'hi.0'), -1, q('hi-0' < 'hi.0'));
 };

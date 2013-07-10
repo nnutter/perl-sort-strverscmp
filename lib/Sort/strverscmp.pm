@@ -7,76 +7,118 @@ use Exporter 'import';
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort);
 
+use feature ':5.10';
+
+use constant SX => 0;
+use constant FX => 1;
+use constant IX => 2;
+use constant YX => 3;
+use constant S => qr/^[^\d\-_.]+/;
+use constant F => qr/^0\d+/;
+use constant I => qr/^\d+/;
+use constant Y => qr/^[\-_.]/;
+
+sub type {
+    my $in = shift;
+
+    state $S = S;
+    state $F = F;
+    state $I = I;
+    state $Y = Y;
+
+    for ($in) {
+        when (/($S)$/) { return SX }
+        when (/($F)$/) { return FX } # must test F before I
+        when (/($I)$/) { return IX }
+        when (/($Y)$/) { return YX }
+        default { die sprintf(q(unknown type: %s), $in) }
+    }
+}
+
+sub select_cmp {
+    my ($l, $r) = @_;
+
+    state $cmp;
+    unless ($cmp) {
+        $cmp = [];
+        $cmp->[SX][SX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[SX][FX] = sub {  1 };
+        $cmp->[SX][IX] = sub {  1 };
+        $cmp->[SX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[FX][SX] = sub { -1 };
+        $cmp->[FX][FX] = sub { my ($a, $b) = @_; $a <=> $b };
+        $cmp->[FX][IX] = sub { -1 };
+        $cmp->[FX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[IX][SX] = sub { -1 };
+        $cmp->[IX][FX] = sub {  1 };
+        $cmp->[IX][IX] = sub { my ($a, $b) = @_; $a <=> $b };
+        $cmp->[IX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[YX][SX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[YX][FX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[YX][IX] = sub { my ($a, $b) = @_; $a cmp $b };
+        $cmp->[YX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
+    }
+
+    my $sub = $cmp->[type($l)][type($r)];
+    unless ($sub) {
+        die sprintf(q(unknown cmp for (%s, %s)), $l, $r);
+    }
+
+    return $sub;
+}
+
+sub decompose {
+    my $str = shift;
+
+    state $S = S;
+    state $F = F;
+    state $I = I;
+    state $Y = Y;
+
+    my @parts;
+    my $idx = 0;
+    while ($idx < length($str)) {
+        for (substr($str, $idx)) {
+            when (/($S)/) { push @parts, $1; $idx += length($1) }
+            when (/($F)/) { push @parts, $1; $idx += length($1) } # must test F before I
+            when (/($I)/) { push @parts, $1; $idx += length($1) }
+            when (/($Y)/) { push @parts, $1; $idx += length($1) }
+            default { die sprintf(q(unknown decomposition: %s), substr($str, $idx)) }
+        }
+    }
+
+    return @parts;
+}
+
 sub strverscmp {
     my ($l, $r) = @_;
 
-    my ($ls, $ln, $rs, $rn);
-    ($ls, $ln, $l) = decompose_version($l);
-    ($rs, $rn, $r) = decompose_version($r);
+    my @l = decompose($l);
+    my @r = decompose($r);
 
-    my $scmp = ($ls cmp $rs);
-    return $scmp if ($scmp != 0);
-
-    # TODO: How can this be refactored?
-    if ($ln eq '' && $rn eq '') {
-        return 0;
-    } elsif ($ln eq '' || $rn eq '') {
-        return ($ln eq '' ? -1 : 1);
+    while (@l > 0 && @r > 0) {
+        my $lt = shift @l;
+        my $rt = shift @r;
+        my $cmp = select_cmp($lt, $rt);
+        my $rv = $cmp->($lt, $rt);
+        if ($rv != 0) {
+            return $rv;
+        }
     }
 
-    my $ncmp = ncmp($ln, $rn);
-    return $ncmp if ($ncmp != 0);
-
-    if (length($l) || length($r)) {
-        return strverscmp($l, $r);
-    } else {
+    if (@l == 0 && @r == 0) {
         return 0;
+    } elsif (@l == 0 && @r != 0) {
+        return -1;
+    } elsif (@l != 0 && @r == 0) {
+        return  1;
+    } else {
+        die;
     }
 }
 
 sub strverssort {
     return sort { strverscmp($a, $b) } @_;
-}
-
-sub decompose_version {
-    my ($string, $number, $remainder) = shift =~ /^(\D*)(\d*)(.*)$/;
-    return ($string, $number, $remainder);
-}
-
-sub ncmp {
-    my ($l, $r) = @_;
-
-    if (!is_fractional($l) && !is_fractional($r)) {
-        return $l <=> $r;
-    } elsif (is_fractional($l) && is_fractional($r)) {
-        return fcmp($l, $r);
-    } else {
-        return (is_fractional($l) ? -1 : 1);
-    }
-}
-
-sub is_fractional {
-    my $n = shift;
-    return (index($n, '0') == 0);
-}
-
-sub fcmp {
-    my ($l, $r) = @_;
-
-    my ($lz, $ln, $rz, $rn);
-    ($lz, $ln) = decompose_fractional($l);
-    ($rz, $rn) = decompose_fractional($r);
-
-    if (length($lz) == length($rz)) {
-        return $ln <=> $rn;
-    } else {
-        return (length($lz) > length($rz) ? -1 : 1);
-    }
-}
-
-sub decompose_fractional {
-    my ($zeroes, $number) = shift =~ /^(0*)(\d+)$/;
-    return ($zeroes, $number);
 }
 
 1;
