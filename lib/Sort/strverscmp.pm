@@ -1,6 +1,72 @@
 use strict;
 use warnings;
 
+package StringIterator;
+
+use Carp qw(croak);
+
+sub new {
+    my $class = shift;
+    my $string = shift;
+
+    unless ($string) {
+        croak 'invalid string';
+    }
+
+    my $o = {};
+    $o->{pos} = 0;
+    $o->{string} = $string;
+    $o->{len} = length($string);
+
+    return bless $o, $class;
+}
+
+sub pos {
+    my $self = shift;
+    return $self->{pos};
+}
+
+sub string {
+    my $self = shift;
+    return $self->{string};
+}
+
+sub len {
+    my $self = shift;
+    return $self->{len};
+}
+
+sub head {
+    my $self = shift;
+    if ($self->pos >= $self->len) {
+        return;
+    } else {
+        return substr($self->string, $self->pos, 1);
+    }
+}
+
+sub tail {
+    my $self = shift;
+    return substr($self->string, $self->pos + 1);
+}
+
+sub tail_len {
+    my $self = shift;
+    return ($self->len - $self->pos);
+}
+
+sub advance {
+    my $self = shift;
+    $self->{pos}++;
+}
+
+sub next {
+    my $self = shift;
+    my $head = $self->head();
+    $self->advance();
+    return $head;
+}
+
 package Sort::strverscmp;
 
 use Exporter 'import';
@@ -9,112 +75,58 @@ our @EXPORT_OK = qw(strverssort);
 
 use feature ':5.10';
 
-use constant SX => 0;
-use constant FX => 1;
-use constant IX => 2;
-use constant YX => 3;
-use constant S => qr/^[^\d\-_.]+/;
-use constant F => qr/^0\d+/;
-use constant I => qr/^\d+/;
-use constant Y => qr/^[\-_.]/;
-
-sub type {
-    my $in = shift;
-
-    state $S = S;
-    state $F = F;
-    state $I = I;
-    state $Y = Y;
-
-    for ($in) {
-        when (/($S)$/) { return SX }
-        when (/($F)$/) { return FX } # must test F before I
-        when (/($I)$/) { return IX }
-        when (/($Y)$/) { return YX }
-        default { die sprintf(q(unknown type: %s), $in) }
-    }
+sub isdigit {
+    my $c = shift;
+    return (defined($c) && $c =~ /^\d+$/);
 }
 
-sub select_cmp {
+sub fcmp {
     my ($l, $r) = @_;
 
-    state $cmp;
-    unless ($cmp) {
-        $cmp = [];
-        $cmp->[SX][SX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[SX][FX] = sub {  1 };
-        $cmp->[SX][IX] = sub {  1 };
-        $cmp->[SX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[FX][SX] = sub { -1 };
-        $cmp->[FX][FX] = sub { my ($a, $b) = @_; $a <=> $b };
-        $cmp->[FX][IX] = sub { -1 };
-        $cmp->[FX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[IX][SX] = sub { -1 };
-        $cmp->[IX][FX] = sub {  1 };
-        $cmp->[IX][IX] = sub { my ($a, $b) = @_; $a <=> $b };
-        $cmp->[IX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[YX][SX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[YX][FX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[YX][IX] = sub { my ($a, $b) = @_; $a cmp $b };
-        $cmp->[YX][YX] = sub { my ($a, $b) = @_; $a cmp $b };
-    }
+    my ($lz, $ln, $rz, $rn);
+    ($lz, $ln) = decompose_fractional($l);
+    ($rz, $rn) = decompose_fractional($r);
 
-    my $sub = $cmp->[type($l)][type($r)];
-    unless ($sub) {
-        die sprintf(q(unknown cmp for (%s, %s)), $l, $r);
-    }
-
-    return $sub;
-}
-
-sub decompose {
-    my $str = shift;
-
-    state $S = S;
-    state $F = F;
-    state $I = I;
-    state $Y = Y;
-
-    my @parts;
-    my $idx = 0;
-    while ($idx < length($str)) {
-        for (substr($str, $idx)) {
-            when (/($S)/) { push @parts, $1; $idx += length($1) }
-            when (/($F)/) { push @parts, $1; $idx += length($1) } # must test F before I
-            when (/($I)/) { push @parts, $1; $idx += length($1) }
-            when (/($Y)/) { push @parts, $1; $idx += length($1) }
-            default { die sprintf(q(unknown decomposition: %s), substr($str, $idx)) }
-        }
-    }
-
-    return @parts;
-}
-
-sub strverscmp {
-    my ($l, $r) = @_;
-
-    my @l = decompose($l);
-    my @r = decompose($r);
-
-    while (@l > 0 && @r > 0) {
-        my $lt = shift @l;
-        my $rt = shift @r;
-        my $cmp = select_cmp($lt, $rt);
-        my $rv = $cmp->($lt, $rt);
-        if ($rv != 0) {
-            return $rv;
-        }
-    }
-
-    if (@l == 0 && @r == 0) {
-        return 0;
-    } elsif (@l == 0 && @r != 0) {
-        return -1;
-    } elsif (@l != 0 && @r == 0) {
-        return  1;
+    if (length($lz) == length($rz)) {
+        return $ln <=> $rn;
     } else {
-        die;
+        return (length($lz) > length($rz) ? -1 : 1);
     }
+}
+
+sub decompose_fractional {
+    my ($zeroes, $number) = shift =~ /^(0*)(\d+)$/;
+    return ($zeroes, $number);
+}
+
+# strnum_cmp from bam_sort.c
+sub strverscmp {
+    my ($a, $b) = @_;
+
+    my $ai = StringIterator->new($a);
+    my $bi = StringIterator->new($b);
+
+    do {
+        if (isdigit($ai->head) && isdigit($bi->head)) {
+            my $an = (($ai->head . $ai->tail) =~ /^(\d*)/)[0];
+            my $bn = (($bi->head . $bi->tail) =~ /^(\d*)/)[0];
+            if ($an =~ /^0\d/ || $bn =~ /^0\d/) {
+                return fcmp($an, $bn);
+            } else {
+                if ($an <=> $bn) {
+                    return ($an <=> $bn);
+                }
+            }
+        } else {
+            if ($ai->head cmp $bi->head) {
+                return ($ai->head cmp $bi->head);
+            }
+        }
+        $ai->advance();
+        $bi->advance();
+    } while (defined($ai->head) && defined($bi->head));
+
+    return $ai->head ? 1 : $bi->head ? -1 : 0;
 }
 
 sub strverssort {

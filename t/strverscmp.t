@@ -1,26 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More tests => 2;
 
 use Sort::strverscmp;
-
-subtest 'decompose' => sub {
-    my @cases = (
-        ['abc-123', 'abc', '-', '123'],
-        ['abc .2', 'abc ', '.', '2'],
-        ['abc 0.2', 'abc ', '0', '.', '2'],
-        ['1.0', '1', '.', '0'],
-        ['v_5', 'v', '_', '5'],
-    );
-    plan tests => scalar(@cases);
-
-    for my $case (@cases) {
-        my ($orig, @eparts) = @$case;
-        my @parts = Sort::strverscmp::decompose($orig);
-        is_deeply(\@parts, \@eparts, qq(parts matched for '$orig'));
-    }
-};
 
 subtest 'GNU strverscmp examples' => sub {
     plan tests => 5;
