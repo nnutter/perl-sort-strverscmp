@@ -1,0 +1,12 @@
+Source: libsort-strverscmp-perl
+Section: perl
+Priority: optional
+Maintainer: Nathaniel Nutter <nnutter@genome.wustl.edu>
+Build-Depends: debhelper (>= 7)
+Build-Depends-Indep: perl
+
+Package: libsort-strverscmp-perl
+Architecture: all
+Depends: ${misc:Depends}, ${perl:Depends}
+Description: Sort::strverscmp -- Compare strings while treating digits characters numerically.
+ Pure Perl implementation of GNU strverscmp.

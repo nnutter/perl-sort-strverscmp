@@ -1,0 +1,5 @@
+libsort-strverscmp-perl (0.007-1) lucid; urgency=low
+
+  * Initial release.
+
+ -- Nathaniel Nutter <nnutter@genome.wustl.edu>  Mon, 15 Jul 2013 15:58:48 -0500
