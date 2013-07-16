@@ -1,0 +1,17 @@
+LICENSE
+MANIFEST
+META.yml
+Makefile.PL
+README
+README.md
+debian/changelog
+debian/compat
+debian/control
+debian/copyright
+debian/libsort-strverscmp-perl.docs
+debian/rules
+debian/source/format
+dist.ini
+lib/Sort/strverscmp.pm
+t/strverscmp.t
+util/benchmark.pl
