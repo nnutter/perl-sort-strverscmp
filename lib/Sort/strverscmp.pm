@@ -1,81 +1,16 @@
+package Sort::strverscmp;
+
+require Sort::strverscmp::StringIterator;
+
+use Exporter 'import';
+use v5.10;
+
 use strict;
 use warnings;
 
-package StringIterator;
-
-use Carp qw(croak);
-
-sub new {
-    my $class = shift;
-    my $string = shift;
-
-    unless ($string) {
-        croak 'invalid string';
-    }
-
-    my $o = {};
-    $o->{pos} = 0;
-    $o->{string} = $string;
-    $o->{len} = length($string);
-
-    return bless $o, $class;
-}
-
-sub pos {
-    my $self = shift;
-    return $self->{pos};
-}
-
-sub string {
-    my $self = shift;
-    return $self->{string};
-}
-
-sub len {
-    my $self = shift;
-    return $self->{len};
-}
-
-sub head {
-    my $self = shift;
-    if ($self->pos >= $self->len) {
-        return;
-    } else {
-        return substr($self->string, $self->pos, 1);
-    }
-}
-
-sub tail {
-    my $self = shift;
-    return substr($self->string, $self->pos + 1);
-}
-
-sub tail_len {
-    my $self = shift;
-    return ($self->len - $self->pos);
-}
-
-sub advance {
-    my $self = shift;
-    $self->{pos}++;
-}
-
-sub next {
-    my $self = shift;
-    my $head = $self->head();
-    $self->advance();
-    return $head;
-}
-
-package Sort::strverscmp;
-
-use Exporter 'import';
+our $VERSION = "0.011";
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort);
-
-use v5.10;
-
-our $VERSION = "0.011";
 
 sub isdigit {
     my $c = shift;
@@ -105,8 +40,8 @@ sub decompose_fractional {
 sub strverscmp {
     my ($a, $b) = @_;
 
-    my $ai = StringIterator->new($a);
-    my $bi = StringIterator->new($b);
+    my $ai = Sort::strverscmp::StringIterator->new($a);
+    my $bi = Sort::strverscmp::StringIterator->new($b);
 
     do {
         if (isdigit($ai->head) && isdigit($bi->head)) {
