@@ -12,30 +12,6 @@ our $VERSION = "0.011";
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort);
 
-sub _isdigit {
-    my $c = shift;
-    return (defined($c) && $c =~ /^\d+$/);
-}
-
-sub _fcmp {
-    my ($l, $r) = @_;
-
-    my ($lz, $ln, $rz, $rn);
-    ($lz, $ln) = _decompose_fractional($l);
-    ($rz, $rn) = _decompose_fractional($r);
-
-    if (length($lz) == length($rz)) {
-        return $ln <=> $rn;
-    } else {
-        return (length($lz) > length($rz) ? -1 : 1);
-    }
-}
-
-sub _decompose_fractional {
-    my ($zeroes, $number) = shift =~ /^(0*)(\d+)$/;
-    return ($zeroes, $number);
-}
-
 # strnum_cmp from bam_sort.c
 sub strverscmp {
     my ($a, $b) = @_;
@@ -68,6 +44,30 @@ sub strverscmp {
 
 sub strverssort {
     return sort { strverscmp($a, $b) } @_;
+}
+
+sub _isdigit {
+    my $c = shift;
+    return (defined($c) && $c =~ /^\d+$/);
+}
+
+sub _fcmp {
+    my ($l, $r) = @_;
+
+    my ($lz, $ln, $rz, $rn);
+    ($lz, $ln) = _decompose_fractional($l);
+    ($rz, $rn) = _decompose_fractional($r);
+
+    if (length($lz) == length($rz)) {
+        return $ln <=> $rn;
+    } else {
+        return (length($lz) > length($rz) ? -1 : 1);
+    }
+}
+
+sub _decompose_fractional {
+    my ($zeroes, $number) = shift =~ /^(0*)(\d+)$/;
+    return ($zeroes, $number);
 }
 
 1;
