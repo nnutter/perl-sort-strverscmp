@@ -2,5 +2,6 @@ Revision history for Perl extension Sort-strverscmp
 
 {{$NEXT}}
 
-    - initial changelog
+    - Added `versionsort` alias for `strverssort` to match GNU function name.
+    - Initial changelog.
 

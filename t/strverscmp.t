@@ -1,8 +1,8 @@
-use strict;
-use warnings;
-
 use Test::More tests => 15;
 use Sort::strverscmp;
+
+use strict;
+use warnings;
 
 # strverscmp.c examples
 is(strverscmp('no digit', 'no digit'), 0, q('no digit' == 'no digit'));

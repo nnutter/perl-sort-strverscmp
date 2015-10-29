@@ -10,7 +10,7 @@ use warnings;
 
 our $VERSION = "0.011";
 our @EXPORT = qw(strverscmp);
-our @EXPORT_OK = qw(strverssort);
+our @EXPORT_OK = qw(strverssort versionsort);
 
 # strnum_cmp from bam_sort.c
 sub strverscmp {
@@ -42,6 +42,7 @@ sub strverscmp {
     return $ai->head ? 1 : $bi->head ? -1 : 0;
 }
 
+sub versionsort { &strverssort }
 sub strverssort {
     return sort { strverscmp($a, $b) } @_;
 }
@@ -81,17 +82,18 @@ Sort::strverscmp -- Compare strings while treating digits characters numerically
 
 =head1 SYNOPSIS
 
-  my @list = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
-  my @them = strverssort(@list);
-  print join(' ', @them), "\n";
+  use Sort::strverscmp 'strverscmp versionsort';
+  my @version = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
+  my @sorted  = versionsort(@list);
+  say join("\n", @sorted);
 
-Prints:
-
-  1.05 1.0.5 A a alpha010 alpha9 alpha10 beta9
+  if (strverscmp($min_version, $this_version) <= 0) {
+    say 'this version satisfies minimum version';
+  }
 
 =head1 DESCRIPTION
 
-Pure Perl implementation of GNU strverscmp.
+Perl equivalents to GNU C<strverscmp> and C<versionsort>.
 
 =head1 METHODS
 
@@ -107,6 +109,10 @@ equal to, or greater than the right version string.
   strverssort('1.0.5', '1.0.50'); # -1
 
 Returns a sorted list of version strings.
+
+=head2 versionsort
+
+Alias for C<strverssort>.
 
 =head1 AUTHOR
 
