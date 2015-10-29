@@ -63,10 +63,10 @@
          "web" : "https://github.com/nnutter/perl-sort-strverscmp"
       }
    },
-   "version" : "0.01",
+   "version" : "0.012",
    "x_authority" : "cpan:NNUTTER",
    "x_contributors" : [
-      "Nathan Nutter <iam@nnutter.com>",
-      "Nathan Nutter <nnutter@genome.wustl.edu>"
+      "Nathan Nutter <nnutter@genome.wustl.edu>",
+      "Nathaniel Nutter <iam@nnutter.com>"
    ]
 }

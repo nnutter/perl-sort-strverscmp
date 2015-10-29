@@ -5,17 +5,37 @@ Sort::strverscmp -- Compare strings while treating digits characters numerically
 
 # SYNOPSIS
 
-    my @list = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
-    my @them = strverssort(@list);
-    print join(' ', @them), "\n";
+    use Sort::strverscmp 'strverscmp versionsort';
+    my @version = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
+    my @sorted  = versionsort(@list);
+    say join("\n", @sorted);
 
-Prints:
-
-    1.05 1.0.5 A a alpha010 alpha9 alpha10 beta9
+    if (strverscmp($min_version, $this_version) <= 0) {
+      say 'this version satisfies minimum version';
+    }
 
 # DESCRIPTION
 
-Pure Perl implementation of GNU strverscmp.
+Perl equivalents to GNU `strverscmp` and `versionsort`.
+
+# METHODS
+
+## strverscmp
+
+    strverscmp('1.0.5', '1.0.50'); # -1
+
+Returns -1, 0, or 1 depending on whether the left version string is less than,
+equal to, or greater than the right version string.
+
+## strverssort
+
+    strverssort('1.0.5', '1.0.50'); # -1
+
+Returns a sorted list of version strings.
+
+## versionsort
+
+Alias for `strverssort`.
 
 # AUTHOR
 
