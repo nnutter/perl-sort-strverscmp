@@ -12,17 +12,17 @@ our $VERSION = "0.011";
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort);
 
-sub isdigit {
+sub _isdigit {
     my $c = shift;
     return (defined($c) && $c =~ /^\d+$/);
 }
 
-sub fcmp {
+sub _fcmp {
     my ($l, $r) = @_;
 
     my ($lz, $ln, $rz, $rn);
-    ($lz, $ln) = decompose_fractional($l);
-    ($rz, $rn) = decompose_fractional($r);
+    ($lz, $ln) = _decompose_fractional($l);
+    ($rz, $rn) = _decompose_fractional($r);
 
     if (length($lz) == length($rz)) {
         return $ln <=> $rn;
@@ -31,7 +31,7 @@ sub fcmp {
     }
 }
 
-sub decompose_fractional {
+sub _decompose_fractional {
     my ($zeroes, $number) = shift =~ /^(0*)(\d+)$/;
     return ($zeroes, $number);
 }
@@ -44,11 +44,11 @@ sub strverscmp {
     my $bi = Sort::strverscmp::StringIterator->new($b);
 
     do {
-        if (isdigit($ai->head) && isdigit($bi->head)) {
+        if (_isdigit($ai->head) && _isdigit($bi->head)) {
             my $an = (($ai->head . $ai->tail) =~ /^(\d*)/)[0];
             my $bn = (($bi->head . $bi->tail) =~ /^(\d*)/)[0];
             if ($an =~ /^0\d/ || $bn =~ /^0\d/) {
-                return fcmp($an, $bn);
+                return _fcmp($an, $bn);
             } else {
                 if ($an <=> $bn) {
                     return ($an <=> $bn);
