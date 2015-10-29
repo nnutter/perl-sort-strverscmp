@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/nnutter/perl-sort-strverscmp.svg?branch=master)](https://travis-ci.org/nnutter/perl-sort-strverscmp)
 # NAME
 
 Sort::strverscmp -- Compare strings while treating digits characters numerically.
@@ -22,10 +23,10 @@ Nathaniel Nutter `nnutter@cpan.org`
 
 # COPYRIGHT AND DISCLAIMER
 
-Copyright 2013, The Genome Institute at Washington University `nnutter@cpan.org`, all rights
-reserved.  This program is free software; you can redistribute it
-and/or modify it under the same terms as Perl itself.
+Copyright 2013, The Genome Institute at Washington University
+`nnutter@cpan.org`, all rights reserved.  This program is free software; you
+can redistribute it and/or modify it under the same terms as Perl itself.
 
-This program is distributed in the hope that it will be useful, but
-without any warranty; without even the implied warranty of
-merchantability or fitness for a particular purpose.
+This program is distributed in the hope that it will be useful, but without any
+warranty; without even the implied warranty of merchantability or fitness for a
+particular purpose.

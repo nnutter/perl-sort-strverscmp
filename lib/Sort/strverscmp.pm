@@ -73,7 +73,9 @@ use Exporter 'import';
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort);
 
-use feature ':5.10';
+use v5.10;
+
+our $VERSION = "0.011";
 
 sub isdigit {
     my $c = shift;
@@ -134,8 +136,9 @@ sub strverssort {
 }
 
 1;
-
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -161,10 +164,13 @@ Nathaniel Nutter C<nnutter@cpan.org>
 
 =head1 COPYRIGHT AND DISCLAIMER
 
-Copyright 2013, The Genome Institute at Washington University C<nnutter@cpan.org>, all rights
-reserved.  This program is free software; you can redistribute it
-and/or modify it under the same terms as Perl itself.
+Copyright 2013, The Genome Institute at Washington University
+C<nnutter@cpan.org>, all rights reserved.  This program is free software; you
+can redistribute it and/or modify it under the same terms as Perl itself.
 
-This program is distributed in the hope that it will be useful, but
-without any warranty; without even the implied warranty of
-merchantability or fitness for a particular purpose.
+This program is distributed in the hope that it will be useful, but without any
+warranty; without even the implied warranty of merchantability or fitness for a
+particular purpose.
+
+=cut
+
