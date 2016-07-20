@@ -5,9 +5,9 @@ Sort::strverscmp -- Compare strings while treating digits characters numerically
 
 # SYNOPSIS
 
-    use Sort::strverscmp 'strverscmp versionsort';
+    use Sort::strverscmp;
     my @version = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
-    my @sorted  = versionsort(@list);
+    my @sorted  = sort strverscmp @list;
     say join("\n", @sorted);
 
     if (strverscmp($min_version, $this_version) <= 0) {
