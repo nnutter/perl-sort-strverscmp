@@ -13,11 +13,9 @@ our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort versionsort);
 
 # strnum_cmp from bam_sort.c
-sub strverscmp {
-    my ($a, $b) = @_;
-
-    my $ai = Sort::strverscmp::StringIterator->new($a);
-    my $bi = Sort::strverscmp::StringIterator->new($b);
+sub strverscmp($$) {
+    my $ai = Sort::strverscmp::StringIterator->new($_[0]);
+    my $bi = Sort::strverscmp::StringIterator->new($_[1]);
 
     do {
         if (_isdigit($ai->head) && _isdigit($bi->head)) {
@@ -82,9 +80,9 @@ Sort::strverscmp -- Compare strings while treating digits characters numerically
 
 =head1 SYNOPSIS
 
-  use Sort::strverscmp 'strverscmp versionsort';
+  use Sort::strverscmp;
   my @version = qw(a A beta9 alpha9 alpha10 alpha010 1.0.5 1.05);
-  my @sorted  = versionsort(@list);
+  my @sorted  = sort strverscmp @list;
   say join("\n", @sorted);
 
   if (strverscmp($min_version, $this_version) <= 0) {
