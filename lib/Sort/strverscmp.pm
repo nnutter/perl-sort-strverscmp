@@ -3,7 +3,7 @@ package Sort::strverscmp;
 require Sort::strverscmp::StringIterator;
 
 use Exporter 'import';
-use v5.10;
+use 5.010;
 
 use strict;
 use warnings;

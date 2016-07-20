@@ -1,4 +1,4 @@
-requires 'perl', '5.010001';
+requires 'perl', '5.010';
 
 on 'develop' => sub {
     requires 'CPAN::Uploader';
