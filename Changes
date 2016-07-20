@@ -2,6 +2,10 @@ Revision history for Perl extension Sort-strverscmp
 
 {{$NEXT}}
 
+0.013_02 2016-07-20T01:13:52Z
+
+    - Fix issuing causing Perl "5.10", aka, "5.100" to be required.
+
 0.013_01 2016-07-20T01:06:38Z
 
     - Add support for using `strverscmp` as the `SUBNAME` in a `sort SUBNAME LIST`.
