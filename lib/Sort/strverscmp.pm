@@ -8,7 +8,7 @@ use v5.10;
 use strict;
 use warnings;
 
-our $VERSION = "0.012";
+our $VERSION = "0.013_01";
 our @EXPORT = qw(strverscmp);
 our @EXPORT_OK = qw(strverssort versionsort);
 
