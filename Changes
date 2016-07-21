@@ -2,6 +2,8 @@ Revision history for Perl extension Sort-strverscmp
 
 {{$NEXT}}
 
+0.014 2016-07-21T03:10:34Z
+
     - Remove documentation for `strverssort`.
 
 0.013 2016-07-20T01:44:32Z
