@@ -102,15 +102,11 @@ Perl equivalents to GNU C<strverscmp> and C<versionsort>.
 Returns -1, 0, or 1 depending on whether the left version string is less than,
 equal to, or greater than the right version string.
 
-=head2 strverssort
-
-  strverssort('1.0.5', '1.0.50'); # -1
-
-Returns a sorted list of version strings.
-
 =head2 versionsort
 
-Alias for C<strverssort>.
+  versionsort('1.0.5', '1.0.50'); # -1
+
+Returns a sorted list of version strings.
 
 =head1 AUTHOR
 
