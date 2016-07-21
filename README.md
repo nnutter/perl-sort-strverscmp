@@ -27,15 +27,11 @@ Perl equivalents to GNU `strverscmp` and `versionsort`.
 Returns -1, 0, or 1 depending on whether the left version string is less than,
 equal to, or greater than the right version string.
 
-## strverssort
-
-    strverssort('1.0.5', '1.0.50'); # -1
-
-Returns a sorted list of version strings.
-
 ## versionsort
 
-Alias for `strverssort`.
+    versionsort('1.0.5', '1.0.50'); # -1
+
+Returns a sorted list of version strings.
 
 # AUTHOR
 
